@@ -45,8 +45,7 @@ struct gralloc_context_t {
 };
 
 static int gralloc_alloc_buffer(alloc_device_t* dev,
-        size_t size, int usage, buffer_handle_t* pHandle);
-
+        size_t size, int usage, buffer_handle_t* pHandle, int format = 0, int width = 0, int height = 0, int stride = 0);
 /*****************************************************************************/
 
 int fb_device_open(const hw_module_t* module, const char* name,
