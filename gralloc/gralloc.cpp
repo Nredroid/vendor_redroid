@@ -86,7 +86,7 @@ struct private_module_t HAL_MODULE_INFO_SYM = {
             .version_major = 1,
             .version_minor = 0,
             .id = GRALLOC_HARDWARE_MODULE_ID,
-            .name = "Graphics Memory Allocator Module",
+            .name = "Graphics Memory Allocator Module For Redroid",
             .author = "The Android Open Source Project",
             .methods = &gralloc_module_methods
         },
