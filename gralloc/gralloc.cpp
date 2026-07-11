@@ -108,7 +108,7 @@ struct private_module_t HAL_MODULE_INFO_SYM = {
 /*****************************************************************************/
 
 static int gralloc_alloc_buffer(alloc_device_t* dev,
-        size_t size, int /*usage*/, buffer_handle_t* pHandle, int format, int width, int height, int stride);
+        size_t size, int /*usage*/, buffer_handle_t* pHandle, int format, int width, int height, int stride)
 {
     int err = 0;
     int fd = -1;
