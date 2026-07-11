@@ -73,6 +73,10 @@ struct private_handle_t {
     int     flags;
     int     size;
     int     offset;
+    int     format;
+    int     width;
+    int     height;
+    int     stride;
 
     // FIXME: the attributes below should be out-of-line
     uint64_t base __attribute__((aligned(8)));
@@ -85,8 +89,9 @@ struct private_handle_t {
     static const int sNumFds = 1;
     static const int sMagic = 0x3141592;
 
-    private_handle_t(int fd, int size, int flags) :
+    private_handle_t(int fd, int size, int flags, int format = 0, int width = 0, int height = 0, int stride = 0) :
         fd(fd), magic(sMagic), flags(flags), size(size), offset(0),
+        format(format), width(width), height(height), stride(stride),
         base(0), pid(getpid())
     {
         version = sizeof(native_handle);

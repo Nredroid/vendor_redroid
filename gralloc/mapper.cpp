@@ -25,7 +25,7 @@
 
 #include <cutils/atomic.h>
 #include <log/log.h>
-
+#include <system/graphics.h>
 #include <hardware/hardware.h>
 #include <hardware/gralloc.h>
 
@@ -183,5 +183,42 @@ int gralloc_unlock(gralloc_module_t const* /*module*/,
 
     if (private_handle_t::validate(handle) < 0)
         return -EINVAL;
+    return 0;
+}
+
+int gralloc_lock_ycbcr(gralloc_module_t const* /*module*/,
+        buffer_handle_t handle, int /*usage*/,
+        int /*l*/, int /*t*/, int /*w*/, int /*h*/,
+        struct android_ycbcr *ycbcr)
+{
+    if (private_handle_t::validate(handle) < 0)
+        return -EINVAL;
+
+    private_handle_t* hnd = (private_handle_t*)handle;
+
+    if (hnd->format != 0x32315659 && hnd->format != HAL_PIXEL_FORMAT_YCbCr_420_888)
+        return -EINVAL;
+
+    void* base = (void*)hnd->base;
+    size_t ystride = hnd->stride;
+    size_t cstride = ystride / 2;
+    size_t ysize = ystride * hnd->height;
+    size_t csize = cstride * (hnd->height / 2);
+
+    ycbcr->y = base;
+    ycbcr->ystride = ystride;
+    ycbcr->cstride = cstride;
+    ycbcr->chroma_step = 1;
+
+    if (hnd->format == 0x32315659) {
+        ycbcr->cr = (void*)((uintptr_t)base + ysize);
+        ycbcr->cb = (void*)((uintptr_t)base + ysize + csize);
+    } else {
+        ycbcr->cb = (void*)((uintptr_t)base + ysize);
+        ycbcr->cr = (void*)((uintptr_t)base + ysize + csize);
+    }
+
+    memset(ycbcr->reserved, 0, sizeof(ycbcr->reserved));
+
     return 0;
 }

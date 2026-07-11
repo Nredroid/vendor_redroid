@@ -32,7 +32,8 @@
 
 #include <hardware/gralloc.h>
 #include <hardware/hardware.h>
-
+#include <system/graphics.h>
+#define HAL_PIXEL_FORMAT_YV12 0x32315659
 #include "gralloc_priv.h"
 #include "gr.h"
 
@@ -62,6 +63,11 @@ extern int gralloc_lock(gralloc_module_t const* module,
 extern int gralloc_unlock(gralloc_module_t const* module, 
         buffer_handle_t handle);
 
+extern int gralloc_lock_ycbcr(gralloc_module_t const* module,
+        buffer_handle_t handle, int usage,
+        int l, int t, int w, int h,
+        struct android_ycbcr *ycbcr);
+
 extern int gralloc_register_buffer(gralloc_module_t const* module,
         buffer_handle_t handle);
 
@@ -89,6 +95,8 @@ struct private_module_t HAL_MODULE_INFO_SYM = {
         .unregisterBuffer = gralloc_unregister_buffer,
         .lock = gralloc_lock,
         .unlock = gralloc_unlock,
+        .perform = NULL,
+        .lock_ycbcr = gralloc_lock_ycbcr,
     },
     .framebuffer = 0,
     .flags = 0,
@@ -101,7 +109,7 @@ struct private_module_t HAL_MODULE_INFO_SYM = {
 /*****************************************************************************/
 
 static int gralloc_alloc_buffer(alloc_device_t* dev,
-        size_t size, int /*usage*/, buffer_handle_t* pHandle)
+        size_t size, int /*usage*/, buffer_handle_t* pHandle, int format = 0, int width = 0, int height = 0, int stride = 0);
 {
     int err = 0;
     int fd = -1;
@@ -115,7 +123,7 @@ static int gralloc_alloc_buffer(alloc_device_t* dev,
     }
 
     if (err == 0) {
-        private_handle_t* hnd = new private_handle_t(fd, size, 0);
+        private_handle_t* hnd = new private_handle_t(fd, size, 0, format, width, height, stride);
         gralloc_module_t* module = reinterpret_cast<gralloc_module_t*>(
                 dev->common.module);
         err = mapBuffer(module, hnd);
@@ -144,6 +152,7 @@ static int gralloc_alloc(alloc_device_t* dev,
         return -EINVAL;
 
     int bytesPerPixel = 0;
+    bool isYuv420 = false;
     switch (format) {
         case HAL_PIXEL_FORMAT_RGBA_FP16:
             bytesPerPixel = 8;
@@ -161,6 +170,10 @@ static int gralloc_alloc(alloc_device_t* dev,
         case HAL_PIXEL_FORMAT_YV12:
             bytesPerPixel = 2;
             break;
+        case HAL_PIXEL_FORMAT_YCbCr_420_888:
+            bytesPerPixel = 1;
+            isYuv420 = true;
+            break;
         default:
             return -EINVAL;
     }
@@ -170,8 +183,9 @@ static int gralloc_alloc(alloc_device_t* dev,
 
     size_t stride = align(width, tileWidth);
     size_t size = align(height, tileHeight) * stride * bytesPerPixel + 4;
+    if (isYuv420) size = (size - 4) * 3 / 2 + 4;
 
-    int err = gralloc_alloc_buffer(dev, size, usage, pHandle);
+    int err = gralloc_alloc_buffer(dev, size, usage, pHandle, format, width, height, stride);
     if (err < 0) {
         return err;
     }
