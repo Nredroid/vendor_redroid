@@ -1,6 +1,6 @@
 # skip androidx.window.extensions check
 PRODUCT_BROKEN_VERIFY_USES_LIBRARIES := true
-
+$(call soong_config_set,minigbm,platform,intel)
 PRODUCT_PACKAGES += binder_alloc gralloc.redroid gralloc.gbm gralloc.minigbm ipconfigstore vncserver
 
 PRODUCT_COPY_FILES += \
