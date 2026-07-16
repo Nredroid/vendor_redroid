@@ -126,6 +126,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.prepare = hwc_prepare;
         dev->device.set = hwc_set;
         dev->device.getDisplayAttributes = hwc_get_display_attributes;
+        dev->device.getDisplayConfigs = hwc_get_display_configs;
         *device = &dev->device.common;
         status = 0;
     }
@@ -181,3 +182,17 @@ static int hwc_get_display_attributes(struct hwc_composer_device_1* dev,
     return 0;
 }
 
+static int hwc_get_display_configs(struct hwc_composer_device_1* dev __unused,
+                                   int disp, uint32_t* configs, size_t* numConfigs) {
+    if (*numConfigs == 0) {
+        return 0;
+    }
+
+    if (disp == HWC_DISPLAY_PRIMARY) {
+        configs[0] = 0;
+        *numConfigs = 1;
+        return 0;
+    }
+
+    return -EINVAL;
+}
