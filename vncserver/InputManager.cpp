@@ -62,7 +62,7 @@ class BpInputManager: public android::BpInterface<IInputManager>
                     writeMotionEventToParcel((MotionEvent &) ev, data);
                     break;
                 default:
-                    ALOGE("unknown input type: %d", type);
+                    ALOGE("unknown input type: %d", ev.getType());
                     break;
             }
             data.writeInt32(mode);
