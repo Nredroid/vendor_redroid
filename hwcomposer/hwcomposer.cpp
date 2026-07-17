@@ -221,7 +221,7 @@ static int hwc_get_display_configs(struct hwc_composer_device_1* dev __unused,
 
 static int hwc_blank(struct hwc_composer_device_1* dev, int disp, int blank)
 {
-    int ret = -EINVAL
+    int ret = -EINVAL;
     if (blank == 0){
       ret = 0;
     }
