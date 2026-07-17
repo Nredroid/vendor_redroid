@@ -98,7 +98,10 @@ static int hwc_set(hwc_composer_device_1_t * /*dev*/,
 
 static int hwc_device_close(struct hw_device_t *dev)
 {
-    struct hwc_context_t* ctx = (struct hwc_context_t*)dev;
+    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
+    dev->stop_thread = true;
+    std::thread::join()
+    
     if (ctx) {
         free(ctx);
     }
