@@ -220,27 +220,20 @@ static int hwc_blank(struct hwc_composer_device_1* dev, int disp, int blank)
     return 0;
 }
 
-static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
-{
-    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
-    std::unique_lock<std::mutex> lock(hwc_dev->mutex);
+static int hwc_query(struct hwc_composer_device_1 *, int what, int *value) {
     switch (what) {
-    case HWC_BACKGROUND_LAYER_SUPPORTED:
-        // todo: support the background layer yet
-        *value = 0;
-        break;
-    case HWC_VSYNC_PERIOD:
-        ALOGW("Query for deprecated vsync value, returning %dHz", redroid_fps);
-        *value = dev->vsync_period;
-        break;
-    case HWC_DISPLAY_TYPES_SUPPORTED:
-        *value = HWC_DISPLAY_PRIMARY_BIT | HWC_DISPLAY_EXTERNAL_BIT;
-        break;
-    default:
-        // unsupported query
-        return -EINVAL;
+        case HWC_BACKGROUND_LAYER_SUPPORTED:
+            // TODO: Support background layer
+            *value = 0;
+            break;
+        case HWC_DISPLAY_TYPES_SUPPORTED:
+            *value = HWC_DISPLAY_PRIMARY;
+            break;
+        default:
+            // unsupported query
+            ALOGE("%s badness unsupported query what=%d", __FUNCTION__, what);
+            return -EINVAL;
     }
-
     return 0;
 }
 
