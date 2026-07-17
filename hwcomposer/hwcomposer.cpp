@@ -26,7 +26,7 @@
 #include <hardware/hwcomposer.h>
 #include "hwcomposer.h"
 #include <EGL/egl.h>
-
+#include <sys/resource.h>
 /*****************************************************************************/
 
 struct hwc_context_t {
