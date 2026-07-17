@@ -221,7 +221,7 @@ static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
         value[0] = 0;
         break;
     case HWC_VSYNC_PERIOD:
-        ALOGW("Query for deprecated vsync value, returning 60Hz");
+        ALOGW("Query for deprecated vsync value, returning %dHz", redroid_fps);
         *value = 1000 * 1000 * 1000 / redroid_fps;
         break;
     case HWC_DISPLAY_TYPES_SUPPORTED:
