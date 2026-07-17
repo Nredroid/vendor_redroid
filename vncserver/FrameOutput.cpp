@@ -143,37 +143,7 @@ static void doptr(int buttonMask, int x, int y, rfbClientPtr cl)
             goto end;
         }
     }
-    /** Important:fIX THIS
-    ev->initialize(
-            0/*id*/,
-            gTouchDeviceId /*deviceId*/,
-            InputDevice::SOURCE_TOUCHSCREEN /*source*/,
-            ui::LogicalDisplayId{0} /*displayId*/,
-            { {} } /*std::array<uint8_t, 32> hmac*/,
-            action /*action*/,
-            actionButton /*actionButton*/,
-            static_cast<ftl::Flags<MotionFlag>>(0) /*flags*/,
-            0 /*edgeFlags*/,
-            0 /*metaState*/,
-            buttonState /*buttonState*/,
-            MotionClassification::NONE /*classification*/,
-            ui::Transform() /*transform*/,
-            1.0f /*xPrecision*/,
-            1.0f /*yPrecision*/,
-            0.0f /*rawXCursorPosition*/,
-            0.0f /*rawYCursorPosition*/,
-            ui::Transform() /*RawTransform*/,
-            now /*downTime*/,
-            now /*eventTime*/,
-            1 /*pointerCount*/,
-            &gPp /*pointerProperties*/,
-            &gPointer/*pointerCoords*/);
 
-    if (!injectInputEvent(*ev) && !isConnected())
-    {
-        connectService();
-    }
-   **/
 end: 
     data->buttonMask = buttonMask;
 }
