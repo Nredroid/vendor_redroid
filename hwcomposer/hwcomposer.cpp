@@ -142,6 +142,10 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         ALOGI("Set vsync period = %d", dev->vsync_period)
         dev->stop_thread = false;
         dev->vsync_enabled = false;
+        std::thread vsync_th(redroid_vsync_thread_loop, dev);
+        if (dev->vsync_thread != 0) {std::terminate();}
+        dev->vsync_thread = vsync_th.native_handle();
+        vsync_th.detach();
         *device = &dev->device.common;
         status = 0;
     } else {
@@ -260,3 +264,7 @@ static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
     return err;
 }
 
+
+static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
+  return 0;
+}
