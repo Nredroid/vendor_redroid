@@ -55,10 +55,10 @@ class BpInputManager: public android::BpInterface<IInputManager>
             data.writeInt32(1); // prepare write object
             switch(static_cast<InputEventType>(ev.getType()))
             {
-                case AINPUT_EVENT_TYPE_KEY:
+                case static_cast<InputEventType>(AINPUT_EVENT_TYPE_KEY):
                     writeKeyEventToParcel((KeyEvent &) ev, data);
                     break;
-                case AINPUT_EVENT_TYPE_MOTION:
+                case static_cast<InputEventType>(AINPUT_EVENT_TYPE_MOTION):
                     writeMotionEventToParcel((MotionEvent &) ev, data);
                     break;
                 default:
