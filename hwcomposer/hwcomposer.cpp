@@ -111,7 +111,9 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         struct hw_device_t** device)
 {
     bool stream_open = property_get_bool("ro.boot.use_redroid_stream",0);
-    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",15);
+    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",15); //set vsync period here. default = 15 fps
+    if (stream_open != nullptr){
+    }
     int status = -EINVAL;
     if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
         struct hwc_context_t *dev;
@@ -131,7 +133,8 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.getDisplayConfigs = hwc_get_display_configs;
         *device = &dev->device.common;
         status = 0;
-    }
+    } else {
+    ALOGE("%s called with bad name %s","hwc_open",name);}
     return status;
 }
 static int hwc_get_display_attributes(struct hwc_composer_device_1* dev,
