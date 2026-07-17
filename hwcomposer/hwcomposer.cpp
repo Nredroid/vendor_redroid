@@ -114,8 +114,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
     int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",30);
     if (redroid_fps < 1){ redroid_fps = 15; }
     if (stream_open != nullptr){
-    ALOGI("hwc_open, streaming enabled");
-    // todo:impl it.
+    ALOGE("hwc_open, streaming enabled\nNot Impled Yet.");
     }
     int status = -EINVAL;
     if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
