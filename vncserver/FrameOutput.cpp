@@ -143,7 +143,7 @@ static void doptr(int buttonMask, int x, int y, rfbClientPtr cl)
             goto end;
         }
     }
-
+    /** Important:fIX THIS
     ev->initialize(
             0/*id*/,
             gTouchDeviceId /*deviceId*/,
@@ -173,7 +173,7 @@ static void doptr(int buttonMask, int x, int y, rfbClientPtr cl)
     {
         connectService();
     }
-   
+   **/
 end: 
     data->buttonMask = buttonMask;
 }
