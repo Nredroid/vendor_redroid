@@ -110,50 +110,7 @@ static int hwc_device_close(struct hw_device_t *dev)
 
 /*****************************************************************************/
 
-static int hwc_device_open(const struct hw_module_t* module, const char* name,
-        struct hw_device_t** device)
-{
-    bool stream_open = property_get_bool("ro.boot.use_redroid_stream",0);
-    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",30);
-    if (redroid_fps < 1){ redroid_fps = 15; }
-    if (stream_open){
-    ALOGE("hwc_open, streaming enabled\nNot Impled Yet.");
-    }
-    int status = -EINVAL;
-    if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
-        struct redroid_hwc_device *dev;
-        dev = (redroid_hwc_device*)malloc(sizeof(*dev));
-        /* initialize our state here */
-        memset(dev, 0, sizeof(*dev));
-        /* pdev == dev-> device*/
-        /* initialize the procs */
-        dev->device.common.tag = HARDWARE_DEVICE_TAG;
-        dev->device.common.version = HWC_DEVICE_API_VERSION_1_0;
-        dev->device.common.module = const_cast<hw_module_t*>(module);
-        dev->device.common.close = hwc_device_close;
-        dev->device.prepare = hwc_prepare;
-        dev->device.set = hwc_set;
-        dev->device.blank = hwc_blank;
-        dev->device.query = hwc_query;
-        dev->device.dump = nullptr;
-        dev->device.eventControl = hwc_event_control;
-        dev->device.registerProcs = hwc_register_procs;
-        dev->device.getDisplayAttributes = hwc_get_display_attributes;
-        dev->device.getDisplayConfigs = hwc_get_display_configs;
-        dev->vsync_period = 1000000000 / redroid_fps;
-        ALOGI("Set vsync period = %d", dev->vsync_period);
-        dev->stop_thread = false;
-        dev->vsync_enabled = false;
-        std::thread vsync_th(redroid_vsync_thread_loop, dev);
-        if (dev->vsync_thread != 0) {std::terminate();}
-        dev->vsync_thread = vsync_th.native_handle();
-        vsync_th.detach();
-        *device = &dev->device.common;
-        status = 0;
-    } else {
-    ALOGE("%s called with bad name %s","hwc_open",name);}
-    return status;
-}
+
 static int hwc_get_display_attributes(struct hwc_composer_device_1* dev,
                                       int disp, uint32_t config __unused,
                                       const uint32_t* attributes, int32_t* values) {
@@ -308,3 +265,48 @@ static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
   ALOGI("vsync thread exiting");
   return 0;
 }}
+
+static int hwc_device_open(const struct hw_module_t* module, const char* name,
+        struct hw_device_t** device)
+{
+    bool stream_open = property_get_bool("ro.boot.use_redroid_stream",0);
+    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",30);
+    if (redroid_fps < 1){ redroid_fps = 15; }
+    if (stream_open){
+    ALOGE("hwc_open, streaming enabled\nNot Impled Yet.");
+    }
+    int status = -EINVAL;
+    if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
+        struct redroid_hwc_device *dev;
+        dev = (redroid_hwc_device*)malloc(sizeof(*dev));
+        /* initialize our state here */
+        memset(dev, 0, sizeof(*dev));
+        /* pdev == dev-> device*/
+        /* initialize the procs */
+        dev->device.common.tag = HARDWARE_DEVICE_TAG;
+        dev->device.common.version = HWC_DEVICE_API_VERSION_1_0;
+        dev->device.common.module = const_cast<hw_module_t*>(module);
+        dev->device.common.close = hwc_device_close;
+        dev->device.prepare = hwc_prepare;
+        dev->device.set = hwc_set;
+        dev->device.blank = hwc_blank;
+        dev->device.query = hwc_query;
+        dev->device.dump = nullptr;
+        dev->device.eventControl = hwc_event_control;
+        dev->device.registerProcs = hwc_register_procs;
+        dev->device.getDisplayAttributes = hwc_get_display_attributes;
+        dev->device.getDisplayConfigs = hwc_get_display_configs;
+        dev->vsync_period = 1000000000 / redroid_fps;
+        ALOGI("Set vsync period = %d", dev->vsync_period);
+        dev->stop_thread = false;
+        dev->vsync_enabled = false;
+        std::thread vsync_th(redroid_vsync_thread_loop, dev);
+        if (dev->vsync_thread != 0) {std::terminate();}
+        dev->vsync_thread = vsync_th.native_handle();
+        vsync_th.detach();
+        *device = &dev->device.common;
+        status = 0;
+    } else {
+    ALOGE("%s called with bad name %s","hwc_open",name);}
+    return status;
+}
