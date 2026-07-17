@@ -207,7 +207,7 @@ static void hwc_register_procs(struct hwc_composer_device_1* dev,
     redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     hwc_dev->procs = procs;
 
-    dev->display.procs = procs;
+    hwc_dev->device.display.procs = procs;
 }
 
 static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
