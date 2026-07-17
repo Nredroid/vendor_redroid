@@ -99,8 +99,8 @@ static int hwc_set(hwc_composer_device_1_t * /*dev*/,
 static int hwc_device_close(struct hw_device_t *dev)
 {
     redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
-    dev->stop_thread = true;
-    pthread_join(dev->vsync_thread, NULL);
+    hwc_dev->stop_thread = true;
+    pthread_join(hwc_dev->vsync_thread, NULL);
 
     if (hwc_dev) {
         free(hwc_dev);
