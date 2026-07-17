@@ -158,7 +158,7 @@ static int hwc_get_display_attributes(struct hwc_composer_device_1* dev,
     if (attributes == nullptr || values == nullptr) {
         return -EINVAL;
     }
-
+    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     uint32_t attr = *attributes;
     if (attr != HWC_DISPLAY_NO_ATTRIBUTE) {
         if (disp != HWC_DISPLAY_PRIMARY) {
@@ -171,7 +171,7 @@ static int hwc_get_display_attributes(struct hwc_composer_device_1* dev,
             int32_t value;
             switch(attr) {
                 case HWC_DISPLAY_VSYNC_PERIOD:
-                    value = *(int32_t*)((uintptr_t)dev + 244);
+                    value = hwc_dev->vsync_period;
                     break;
 
                 case HWC_DISPLAY_WIDTH:
