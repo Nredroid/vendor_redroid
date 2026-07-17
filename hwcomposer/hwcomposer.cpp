@@ -259,10 +259,10 @@ static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
 
             total_vsync_count++;
         }
-
-  ALOGI("vsync thread exiting");
+}
+ALOGI("vsync thread exiting");
   return 0;
-}}
+}
 
 static int hwc_device_open(const struct hw_module_t* module, const char* name,
         struct hw_device_t** device)
