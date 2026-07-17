@@ -140,6 +140,8 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.getDisplayConfigs = hwc_get_display_configs;
         dev->vsync_period = 1000000000 / redroid_fps;
         ALOGI("Set vsync period = %d", dev->vsync_period)
+        dev->stop_thread = false;
+        dev->vsync_enabled = false;
         *device = &dev->device.common;
         status = 0;
     } else {
@@ -242,7 +244,7 @@ static void hwc_register_procs(struct hwc_composer_device_1* dev,
     redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     hwc_dev->procs = procs;
 
-    hwc_dev->display->procs = procs;
+    hwc_dev->device.display.procs = procs;
 }
 
 static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
