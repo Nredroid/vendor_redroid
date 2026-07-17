@@ -152,7 +152,7 @@ static void doptr(int buttonMask, int x, int y, rfbClientPtr cl)
             { {} } /*std::array<uint8_t, 32> hmac*/,
             action /*action*/,
             actionButton /*actionButton*/,
-            0 /*flags*/,
+            static_cast<ftl::Flags<motionflag>>(0) /*flags*/,
             0 /*edgeFlags*/,
             0 /*metaState*/,
             buttonState /*buttonState*/,
