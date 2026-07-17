@@ -53,7 +53,7 @@ class BpInputManager: public android::BpInterface<IInputManager>
             android::Parcel data, reply;
             data.writeInterfaceToken(IInputManager::getInterfaceDescriptor());
             data.writeInt32(1); // prepare write object
-            switch(static_cast<InputEventType>ev.getType())
+            switch(static_cast<InputEventType>(ev.getType()))
             {
                 case AINPUT_EVENT_TYPE_KEY:
                     writeKeyEventToParcel((KeyEvent &) ev, data);
