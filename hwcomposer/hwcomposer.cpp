@@ -134,6 +134,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.blank = hwc_blank;
         dev->device.query = hwc_query;
         dev->device.dump = nullptr;
+        dev->device.eventControl = hwc_event_control;
         dev->device.registerProcs = hwc_register_procs;
         dev->device.getDisplayAttributes = hwc_get_display_attributes;
         dev->device.getDisplayConfigs = hwc_get_display_configs;
@@ -225,8 +226,8 @@ static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
     std::unique_lock<std::mutex> lock(hwc_dev->mutex);
     switch (what) {
     case HWC_BACKGROUND_LAYER_SUPPORTED:
-        // we don't support the background layer yet
-        value[0] = 0;
+        // todo: support the background layer yet
+        *value = 0;
         break;
     case HWC_VSYNC_PERIOD:
         ALOGW("Query for deprecated vsync value, returning %dHz", redroid_fps);
@@ -250,3 +251,17 @@ static void hwc_register_procs(struct hwc_composer_device_1* dev,
 
     hwc_dev->display->procs = procs;
 }
+
+static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
+                             int event, int enabled) {
+    redroid_hwc_device_t* hwc_dev = static_cast<redroid_hwc_device_t *>(dev);
+   std::unique_lock<std::mutex> lock(hwc_dev->mutex);
+    int err = -EINVAL
+    if (event == 0){
+    hwc_dev->vsync_enabled = enabled != 0;
+     err = 0;
+     ALOGI("VSYNC event status:%d", enabled);
+    }
+    return err;
+}
+
