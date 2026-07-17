@@ -134,6 +134,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.set = hwc_set;
         dev->device.blank = hwc_blank;
         dev->device.query = hwc_query;
+        dev->device.dump = nullptr;
         dev->device.registerProcs = hwc_register_procs;
         dev->device.getDisplayAttributes = hwc_get_display_attributes;
         dev->device.getDisplayConfigs = hwc_get_display_configs;
