@@ -111,7 +111,11 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         struct hw_device_t** device)
 {
     bool stream_open = property_get_bool("ro.boot.use_redroid_stream",0);
+    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",15);
+    if (redroid_fps < 1){ redroid_fps = 15; }
     if (stream_open != nullptr){
+    ALOGI("hwc_open, streaming enabled");
+
     }
     int status = -EINVAL;
     if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
@@ -130,6 +134,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.set = hwc_set;
         dev->device.blank = hwc_blank;
         dev->device.query = hwc_query;
+        dev->device.registerProcs = hwc_register_procs;
         dev->device.getDisplayAttributes = hwc_get_display_attributes;
         dev->device.getDisplayConfigs = hwc_get_display_configs;
         *device = &dev->device.common;
@@ -216,7 +221,6 @@ static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
 {
     redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     std::unique_lock<std::mutex> lock(hwc_dev->mutex);
-    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",15);
     switch (what) {
     case HWC_BACKGROUND_LAYER_SUPPORTED:
         // we don't support the background layer yet
@@ -224,7 +228,7 @@ static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
         break;
     case HWC_VSYNC_PERIOD:
         ALOGW("Query for deprecated vsync value, returning %dHz", redroid_fps);
-        *value = 1000 * 1000 * 1000 / redroid_fps;
+        *value = 1000 * 1000 * 1000 / hwc_dev.vsync_period;
         break;
     case HWC_DISPLAY_TYPES_SUPPORTED:
         *value = HWC_DISPLAY_PRIMARY_BIT | HWC_DISPLAY_EXTERNAL_BIT;
@@ -235,4 +239,12 @@ static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
     }
 
     return 0;
+}
+
+static void hwc_register_procs(struct hwc_composer_device_1* dev,
+                               hwc_procs_t const* procs) {
+    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
+    hwc_dev->procs = procs;
+
+    hwc_dev->display->procs = procs;
 }

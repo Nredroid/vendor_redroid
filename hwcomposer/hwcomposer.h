@@ -7,22 +7,11 @@
 #include <hardware/hwcomposer.h>
 
 typedef struct redroid_hwc_device {
-    /* static data */
     hwc_composer_device_1_t device;
-
-    std::mutex mutex;
-
-    std::thread* hdmi_thread;
-    std::thread* event_thread;
-
-    kms::Card* card;
-
-    HWCDisplay* displays[MAX_DISPLAYS];
-
-    kms::Connector* primaryConector;
-    kms::Connector* externalConector;
-
-    drmEventContext evctx;
-
-    const hwc_procs_t* cb_procs;
+    hwc_procs_t const*       procs;
+    pthread_t                vsync_thread;
+    bool                     stop_thread;
+    int32_t                  vsync_period;
+    std::mutex               hwc_mutex;
+    bool                     vsync_enabled;
 } redroid_hwc_device_t;
