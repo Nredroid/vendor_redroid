@@ -254,20 +254,7 @@ static void dokey(rfbBool down, rfbKeySym key, rfbClientPtr cl)
 
         KeyEvent *ev = gInputEventFactory->createKeyEvent();
         uint64_t now = uptimeMillis();
-        ev->initialize(
-                0/*id*/,
-                gKbdDeviceId /*deviceId*/,
-                InputDevice::SOURCE_KEYBOARD /*source*/,
-                0 /*displayId*/,
-                { {} } /*std::array<uint8_t, 32> hmac*/,
-                down ? AKEY_EVENT_ACTION_DOWN : AKEY_EVENT_ACTION_UP /* action*/,
-                0 /*flags*/,
-                keyCode /*keyCode*/,
-                0 /*scanCode*/,
-                pData->meta /*metaState*/,
-                0 /*repeatCount*/,
-                now /*downTime*/,
-                now /*eventTime*/);
+
         if (!injectInputEvent(*ev) && !isConnected())
         {
             connectService();
