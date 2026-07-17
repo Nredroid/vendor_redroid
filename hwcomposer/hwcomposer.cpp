@@ -24,7 +24,7 @@
 #include <mutex>
 #include <hardware/hardware.h>
 #include <hardware/hwcomposer.h>
-
+#include "hwcomposer.h"
 #include <EGL/egl.h>
 
 /*****************************************************************************/
@@ -111,7 +111,6 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         struct hw_device_t** device)
 {
     bool stream_open = property_get_bool("ro.boot.use_redroid_stream",0);
-    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",15); //set vsync period here. default = 15 fps
     if (stream_open != nullptr){
     }
     int status = -EINVAL;
@@ -211,3 +210,27 @@ static int hwc_blank(struct hwc_composer_device_1* dev, int disp, int blank)
     return 0;
 }
 
+static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
+{
+    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
+    std::unique_lock<std::mutex> lock(hwc_dev->mutex);
+    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",15);
+    switch (what) {
+    case HWC_BACKGROUND_LAYER_SUPPORTED:
+        // we don't support the background layer yet
+        value[0] = 0;
+        break;
+    case HWC_VSYNC_PERIOD:
+        ALOGW("Query for deprecated vsync value, returning 60Hz");
+        *value = 1000 * 1000 * 1000 / redroid_fps;
+        break;
+    case HWC_DISPLAY_TYPES_SUPPORTED:
+        *value = HWC_DISPLAY_PRIMARY_BIT | HWC_DISPLAY_EXTERNAL_BIT;
+        break;
+    default:
+        // unsupported query
+        return -EINVAL;
+    }
+
+    return 0;
+}
