@@ -149,7 +149,7 @@ static void doptr(int buttonMask, int x, int y, rfbClientPtr cl)
             gTouchDeviceId /*deviceId*/,
             InputDevice::SOURCE_TOUCHSCREEN /*source*/,
             ui::LogicalDisplayId{0} /*displayId*/,
-            INVALID_HMAC /*std::array<uint8_t, 32> hmac*/,
+            { {} } /*std::array<uint8_t, 32> hmac*/,
             action /*action*/,
             actionButton /*actionButton*/,
             static_cast<ftl::Flags<MotionFlag>>(0) /*flags*/,
