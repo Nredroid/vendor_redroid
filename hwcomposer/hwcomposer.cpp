@@ -21,7 +21,7 @@
 #include <cutils/properties.h>
 #include <cutils/atomic.h>
 #include <log/log.h>
-
+#include <mutex>
 #include <hardware/hardware.h>
 #include <hardware/hwcomposer.h>
 
@@ -110,6 +110,8 @@ static int hwc_device_close(struct hw_device_t *dev)
 static int hwc_device_open(const struct hw_module_t* module, const char* name,
         struct hw_device_t** device)
 {
+    bool stream_open = property_get_bool("ro.boot.use_redroid_stream",0);
+    int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",15);
     int status = -EINVAL;
     if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
         struct hwc_context_t *dev;
@@ -196,3 +198,4 @@ static int hwc_get_display_configs(struct hwc_composer_device_1* dev __unused,
 
     return -EINVAL;
 }
+
