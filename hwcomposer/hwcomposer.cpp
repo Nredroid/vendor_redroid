@@ -115,13 +115,12 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
     if (redroid_fps < 1){ redroid_fps = 15; }
     if (stream_open != nullptr){
     ALOGI("hwc_open, streaming enabled");
-
+    // todo:impl it.
     }
     int status = -EINVAL;
     if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
         struct hwc_context_t *dev;
-        dev = (hwc_context_t*)malloc(sizeof(*dev));
-
+        dev = (redroid_hwc_device*)malloc(sizeof(*dev));
         /* initialize our state here */
         memset(dev, 0, sizeof(*dev));
         /* pdev == dev-> device*/
@@ -138,6 +137,8 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.registerProcs = hwc_register_procs;
         dev->device.getDisplayAttributes = hwc_get_display_attributes;
         dev->device.getDisplayConfigs = hwc_get_display_configs;
+        dev->vsync_period = 1000000000 / redroid_fps;
+        ALOGI("Set vsync period = %d", dev->vsync_period)
         *device = &dev->device.common;
         status = 0;
     } else {
@@ -229,7 +230,7 @@ static int hwc_query(struct hwc_composer_device_1* dev, int what, int* value)
         break;
     case HWC_VSYNC_PERIOD:
         ALOGW("Query for deprecated vsync value, returning %dHz", redroid_fps);
-        *value = 1000 * 1000 * 1000 / hwc_dev.vsync_period;
+        *value = dev->vsync_period;
         break;
     case HWC_DISPLAY_TYPES_SUPPORTED:
         *value = HWC_DISPLAY_PRIMARY_BIT | HWC_DISPLAY_EXTERNAL_BIT;
