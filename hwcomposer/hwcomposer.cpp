@@ -266,5 +266,43 @@ static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
 
 
 static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
+  setpriority(PRIO_PROCESS, 0, -8);
+  auto next_tick_time = std::chrono::steady_clock::now().time_since_epoch().count();
+  int32_t period = dev->vsync_period;
+  int total_vsync_count = 0;
+  int last_vsync_count = 0;
+  auto last_log_time = next_tick_time;
+  while (true) {
+        next_tick_time += period;
+
+        auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+        auto sleep_duration = next_tick_time - now;
+        if (sleep_duration > 0) {
+            std::this_thread::sleep_for(std::chrono::nanoseconds(sleep_duration));
+        }
+
+        if (dev->stop_thread) {
+            break;
+        }
+        bool is_enabled = false;
+        dev->hwc_mutex.lock();
+        is_enabled = dev->vsync_enabled;
+        dev->hwc_mutex.unlock();
+
+        if (is_enabled) {
+            if (dev->procs && dev->procs->vsync) {
+                dev->procs->vsync(dev->procs, 0, next_tick_time);
+            }
+
+            if (next_tick_time - last_log_time > 61000000000LL) {
+                ALOGD("hw_composer sent %d syncs in %llds", total_vsync_count - last_vsync_count, (next_tick_time - last_log_time) / 1000000000LL);
+                last_vsync_count = total_vsync_count;
+                last_log_time = next_tick_time;
+            }
+
+            total_vsync_count++;
+        }
+
+  ALOGI("vsync thread exiting");
   return 0;
 }
