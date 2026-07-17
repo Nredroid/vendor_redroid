@@ -141,7 +141,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
         dev->device.getDisplayAttributes = hwc_get_display_attributes;
         dev->device.getDisplayConfigs = hwc_get_display_configs;
         dev->vsync_period = 1000000000 / redroid_fps;
-        ALOGI("Set vsync period = %d", dev->vsync_period)
+        ALOGI("Set vsync period = %d", dev->vsync_period);
         dev->stop_thread = false;
         dev->vsync_enabled = false;
         std::thread vsync_th(redroid_vsync_thread_loop, dev);
