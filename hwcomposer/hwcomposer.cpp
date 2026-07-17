@@ -153,7 +153,7 @@ static int hwc_get_display_attributes(struct hwc_composer_device_1* dev,
             int32_t value;
             switch(attr) {
                 case HWC_DISPLAY_VSYNC_PERIOD:
-                    value = *(int32_t*)((uintptr_t)dev + 0xf4);
+                    value = *(int32_t*)((uintptr_t)dev + 244);
                     break;
 
                 case HWC_DISPLAY_WIDTH:
@@ -166,8 +166,7 @@ static int hwc_get_display_attributes(struct hwc_composer_device_1* dev,
 
                 case HWC_DISPLAY_DPI_X:
                 case HWC_DISPLAY_DPI_Y:
-                    value = property_get_int32("ro.sf.lcd_density", 320);
-                    value = value * 1000;
+                    value = property_get_int32("ro.sf.lcd_density", 320) * 1000;
                     break;
 
                 default:
