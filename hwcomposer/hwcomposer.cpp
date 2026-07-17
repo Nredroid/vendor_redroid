@@ -212,7 +212,7 @@ static void hwc_register_procs(struct hwc_composer_device_1* dev,
 
 static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
                              int event, int enabled) {
-    redroid_hwc_device_t* hwc_dev = static_cast<redroid_hwc_device_t *>(dev);
+    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
    std::unique_lock<std::mutex> lock(hwc_dev->hwc_mutex);
     int err = -EINVAL;
     if (event == 0){
