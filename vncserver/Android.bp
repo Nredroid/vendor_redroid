@@ -43,7 +43,7 @@ cc_binary {
 
     include_dirs: ["external/libvncserver"],
 
-    static_libs: ["libvncserver"],
+    shared_libs: ["libvncserver"],
 
     init_rc: ["vncserver.rc"],
 
