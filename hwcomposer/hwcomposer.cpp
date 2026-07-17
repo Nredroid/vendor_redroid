@@ -121,7 +121,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
     }
     int status = -EINVAL;
     if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
-        struct hwc_context_t *dev;
+        struct redroid_hwc_device *dev;
         dev = (redroid_hwc_device*)malloc(sizeof(*dev));
         /* initialize our state here */
         memset(dev, 0, sizeof(*dev));
