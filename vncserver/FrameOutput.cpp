@@ -148,7 +148,7 @@ static void doptr(int buttonMask, int x, int y, rfbClientPtr cl)
             0/*id*/,
             gTouchDeviceId /*deviceId*/,
             InputDevice::SOURCE_TOUCHSCREEN /*source*/,
-            0 /*displayId*/,
+            ui::LogicalDisplayId{0} /*displayId*/,
             { {} } /*std::array<uint8_t, 32> hmac*/,
             action /*action*/,
             actionButton /*actionButton*/,
