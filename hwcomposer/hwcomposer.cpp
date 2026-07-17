@@ -100,11 +100,10 @@ static int hwc_device_close(struct hw_device_t *dev)
 {
     redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     dev->stop_thread = true;
-    dev->vsync_thread
     pthread_join(dev->vsync_thread, NULL);
 
-    if (ctx) {
-        free(ctx);
+    if (hwc_dev) {
+        free(hwc_dev);
     }
     return 0;
 }
