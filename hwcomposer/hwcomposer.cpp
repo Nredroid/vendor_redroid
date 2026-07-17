@@ -116,7 +116,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
     bool stream_open = property_get_bool("ro.boot.use_redroid_stream",0);
     int32_t redroid_fps = property_get_int32("ro.boot.redroid_fps",30);
     if (redroid_fps < 1){ redroid_fps = 15; }
-    if (stream_open != nullptr){
+    if (stream_open){
     ALOGE("hwc_open, streaming enabled\nNot Impled Yet.");
     }
     int status = -EINVAL;
@@ -250,7 +250,7 @@ static void hwc_register_procs(struct hwc_composer_device_1* dev,
     redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     hwc_dev->procs = procs;
 
-    hwc_dev->device.display.procs = procs;
+    dev->device.display.procs = procs;
 }
 
 static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
