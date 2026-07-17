@@ -39,12 +39,10 @@ cc_binary {
         "liblog",
         "libinput",
         "libui",
+        "libvncserver"
     ],
 
     include_dirs: ["external/libvncserver"],
-
-    shared_libs: ["libvncserver"],
-
     init_rc: ["vncserver.rc"],
 
     cflags: [
