@@ -27,6 +27,7 @@
 #include "hwcomposer.h"
 #include <EGL/egl.h>
 #include <sys/resource.h>
+#include <assert.h>
 /*****************************************************************************/
 
 struct hwc_context_t {
@@ -87,7 +88,7 @@ static int hwc_prepare(hwc_composer_device_1_t * dev,
             continue;
         if (contents->hwLayers[i].flags & HWC_SKIP_LAYER)
             continue;
-
+        contents->hwLayers[i].compositionType = HWC_FRAMEBUFFER;
     }
     return 0;
 }
