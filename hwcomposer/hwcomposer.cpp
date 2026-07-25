@@ -241,8 +241,8 @@ static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
   while (true) {
         next_tick_time += period;
         auto now = std::chrono::steady_clock::now();
-        if (now >= next_tick_time){
-            next_tick_time = now + period;
+        if (now >= next_tick_time) {
+        next_tick_time = now + (period - (now - next_tick_time) % period);
         }
         std::this_thread::sleep_until(next_tick_time);
         if (dev->stop_thread) {
