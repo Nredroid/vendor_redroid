@@ -75,7 +75,6 @@ static int hwc_prepare(hwc_composer_device_1_t * dev,
         size_t numDisplays, hwc_display_contents_1_t** displays) {
      if (HWC_DISPLAY_PRIMARY >= numDisplays || !displays)
         return 0;
-    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     hwc_display_contents_1_t *contents = displays[HWC_DISPLAY_PRIMARY];
     assert(contents);
 
@@ -112,7 +111,7 @@ static int hwc_device_close(struct hw_device_t *dev)
 {
     redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
     hwc_dev->stop_thread = true;
-    pthread_join(hwc_dev->vsync_thread, NULL);
+    pthread_join(hwc_dev->vsync_thread, nullptr);
 
     if (hwc_dev) {
         free(hwc_dev);
@@ -191,10 +190,10 @@ static int hwc_get_display_configs(struct hwc_composer_device_1* dev __unused,
 static int hwc_blank(struct hwc_composer_device_1* dev, int disp, int blank)
 {
     int ret = -EINVAL;
-    if (blank == 0){
-      ret = 0;
-    }
-    return 0;
+    if (blank == 0)
+        ret = 0;
+
+    return ret;
 }
 
 static int hwc_query(struct hwc_composer_device_1 *, int what, int *value) {
@@ -277,8 +276,7 @@ static int hwc_device_open(const struct hw_module_t* module, const char* name,
     }
     int status = -EINVAL;
     if (!strcmp(name, HWC_HARDWARE_COMPOSER)) {
-        struct redroid_hwc_device *dev;
-        dev = (redroid_hwc_device*)malloc(sizeof(*dev));
+        struct redroid_hwc_device* dev = (redroid_hwc_device*)malloc(sizeof(*dev));
         /* initialize our state here */
         memset(dev, 0, sizeof(*dev));
         /* pdev == dev-> device*/
