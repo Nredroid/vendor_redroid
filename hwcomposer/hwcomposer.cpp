@@ -245,6 +245,9 @@ static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
         next_tick_time += period;
 
         auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+        if (now >= next_tick_time){
+            next_tick_time = now + period;
+        }
         auto sleep_duration = next_tick_time - now;
         if (sleep_duration > 0) {
             std::this_thread::sleep_for(std::chrono::nanoseconds(sleep_duration));
