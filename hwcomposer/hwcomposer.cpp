@@ -236,23 +236,15 @@ static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
 
 static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
   setpriority(PRIO_PROCESS, 0, -8);
-  auto next_tick_time = std::chrono::steady_clock::now().time_since_epoch().count();
-  int32_t period = dev->vsync_period;
-  int total_vsync_count = 0;
-  int last_vsync_count = 0;
-  auto last_log_time = next_tick_time;
+  auto next_tick_time = std::chrono::steady_clock::now();
+  std::chrono::nanoseconds period = std::chrono::nanoseconds(dev->vsync_period);
   while (true) {
         next_tick_time += period;
-
-        auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+        auto now = std::chrono::steady_clock::now();
         if (now >= next_tick_time){
             next_tick_time = now + period;
         }
-        auto sleep_duration = next_tick_time - now;
-        if (sleep_duration > 0) {
-            std::this_thread::sleep_for(std::chrono::nanoseconds(sleep_duration));
-        }
-
+        std::this_thread::sleep_until(next_tick_time);
         if (dev->stop_thread) {
             break;
         }
@@ -263,16 +255,11 @@ static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
 
         if (is_enabled) {
             if (dev->procs && dev->procs->vsync) {
-                dev->procs->vsync(dev->procs, 0, next_tick_time);
+            int64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    next_tick_time.time_since_epoch()
+                ).count();
+                dev->procs->vsync(dev->procs, 0, timestamp_ns);
             }
-
-            if (next_tick_time - last_log_time > 61000000000LL) {
-                ALOGD("hw_composer sent %d syncs in %llds", total_vsync_count - last_vsync_count, (next_tick_time - last_log_time) / 1000000000LL);
-                last_vsync_count = total_vsync_count;
-                last_log_time = next_tick_time;
-            }
-
-            total_vsync_count++;
         }
 }
 ALOGI("vsync thread exiting");
