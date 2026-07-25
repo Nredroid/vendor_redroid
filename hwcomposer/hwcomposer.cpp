@@ -70,13 +70,24 @@ static void dump_layer(hwc_layer_1_t const* l) {
 }
 #endif
 
-static int hwc_prepare(hwc_composer_device_1_t * /*dev*/,
-        size_t /*numDisplays*/, hwc_display_contents_1_t** displays) {
-    if (displays && (displays[0]->flags & HWC_GEOMETRY_CHANGED)) {
-        for (size_t i=0 ; i<displays[0]->numHwLayers ; i++) {
-            //dump_layer(&list->hwLayers[i]);
-            displays[0]->hwLayers[i].compositionType = HWC_FRAMEBUFFER;
+static int hwc_prepare(hwc_composer_device_1_t * dev,
+        size_t numDisplays, hwc_display_contents_1_t** displays) {
+     if (HWC_DISPLAY_PRIMARY >= numDisplays || !displays)
+        return 0;
+    redroid_hwc_device_t* hwc_dev = (redroid_hwc_device_t*)dev;
+    hwc_display_contents_1_t *contents = displays[HWC_DISPLAY_PRIMARY];
+    assert(contents);
+
+    for (size_t i = 0; i < contents->numHwLayers; i++) {
+        if (contents->hwLayers[i].flags & HWC_IS_CURSOR_LAYER) {
+            contents->hwLayers[i].compositionType = HWC_OVERLAY;
+            continue;
         }
+        if (contents->hwLayers[i].compositionType == HWC_FRAMEBUFFER_TARGET)
+            continue;
+        if (contents->hwLayers[i].flags & HWC_SKIP_LAYER)
+            continue;
+
     }
     return 0;
 }
