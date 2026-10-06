@@ -235,18 +235,30 @@ static int hwc_event_control(struct hwc_composer_device_1* dev, int disp,
 
 static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
   setpriority(PRIO_PROCESS, 0, -8);
-  auto next_tick_time = std::chrono::steady_clock::now();
+  
+  if (dev->vsync_period <= 0) {
+      ALOGE("Fatal: dev->vsync_period is %d! Forcing fallback to 60 FPS.", dev->vsync_period);
+      dev->vsync_period = 1000000000 / 60;
+  }
+
   std::chrono::nanoseconds period = std::chrono::nanoseconds(dev->vsync_period);
+  auto next_tick_time = std::chrono::steady_clock::now();
+  
   while (true) {
-        next_tick_time += period;
-        auto now = std::chrono::steady_clock::now();
-        if (now >= next_tick_time) {
-        next_tick_time = now + (period - (now - next_tick_time) % period);
-        }
-        std::this_thread::sleep_until(next_tick_time);
         if (dev->stop_thread) {
             break;
         }
+
+        next_tick_time += period;
+        auto now = std::chrono::steady_clock::now();
+        
+
+        if (now >= next_tick_time) {
+            next_tick_time = now + period; 
+        }
+        
+        std::this_thread::sleep_until(next_tick_time);
+
         bool is_enabled = false;
         dev->hwc_mutex.lock();
         is_enabled = dev->vsync_enabled;
@@ -254,16 +266,17 @@ static int redroid_vsync_thread_loop(redroid_hwc_device* dev){
 
         if (is_enabled) {
             if (dev->procs && dev->procs->vsync) {
-            int64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                int64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
                     next_tick_time.time_since_epoch()
                 ).count();
                 dev->procs->vsync(dev->procs, 0, timestamp_ns);
             }
         }
-}
-ALOGI("vsync thread exiting");
+  }
+  ALOGI("vsync thread exiting");
   return 0;
 }
+
 
 static int hwc_device_open(const struct hw_module_t* module, const char* name,
         struct hw_device_t** device)
